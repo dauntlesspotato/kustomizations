@@ -1,3 +1,36 @@
+# Create service account for fluentd
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: fluentd-service-account
+  namespace: kube-system
+---
+# define role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: fluentd-role
+  namespace: kube-system
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["list"]
+---
+# define rolebinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: fluentd-role-binding
+  namespace: kube-system
+subjects:
+    - kind: ServiceAccount
+      name: fluentd-service-account
+      namespace: kube-system
+roleRef:
+    kind: Role
+    name: fluentd-role
+    apiGroup: rbac.authorization.k8s.io
+---
 # fluentbit standard config
 apiVersion: apps/v1
 kind: DaemonSet
